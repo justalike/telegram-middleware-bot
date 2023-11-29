@@ -23,7 +23,7 @@ export const userSchema = new Schema({
     username: { type: String, required: false },
     first_name: { type: String, required: false },
     last_name: { type: String, required: false },
-    language_code: { type: String, required: true },
+    language_code: { type: String, required: false },
     messages: { type: [Number], default: [] },
     blocked: { type: Boolean, default: false },
     date: {
