@@ -12,6 +12,7 @@ export class TelegramController {
       this.service = new TelegramService(bot)
       this.adminId = +settings.adminId
       this.bot.on('message', (message) => {
+        if (message.chat.type !== 'private') return;
         this.service.ensureUserExists(message);
     
         // Check if the message contains any media or file
