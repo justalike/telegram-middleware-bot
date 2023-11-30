@@ -8,13 +8,13 @@ chunkArray,
 
 export class KeyboardService {
  
-  static getMainMenuKeyboard = () => [
-    ['Помощь (/help)'],
-  ]
+  // static getMainMenuKeyboard = () => [
+  //   ['Помощь (/help)'],
+  // ]
 
   static getAdminKeyboard = () =>  createInlineKeyboard(
     [
-      [createButton('Черный список', '/list')],
+      [createButton('Черный список', 'list')],
     ],
   )
 

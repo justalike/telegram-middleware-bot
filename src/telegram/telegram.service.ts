@@ -28,7 +28,7 @@ export class TelegramService {
            case '/start':
                return await this.sendMessage(this.adminId, `Привет, админ!`, {
                    parse_mode: 'HTML',
-                   reply_markup: KeyboardService.getAdminKeyboard(),
+                   reply_markup: KeyboardService.getAdminBlockListKeyboard(),
                })
            case '/list':
                return await this.sendMessage(this.adminId, `Что вы хотите сделать?`, {
@@ -37,6 +37,32 @@ export class TelegramService {
                })
        }
     }
+}
+
+
+public async handleMediaMessage(adminId: number, message: TelegramBot.Message): Promise<TelegramBot.Message|void> {
+  // First, check if the user is blocked or not found
+  const user = await UserService.findUserByTelegramId(message.from.id);
+  if (!user || user.blocked) return console.log(`Заблокированный пользователь написал: ${message.text}`);
+
+  // Send confirmation to the user
+  await this.sendMessage(message.from.id, `Ваше медиа отправлено!`)
+  .then(
+      (confirmationMessage) => 
+      setTimeout(() => this.telegram.deleteMessage(confirmationMessage.chat.id, confirmationMessage.message_id), 5000)
+  );
+
+  // Forward the media message to the admin
+   
+  await this.sendMessage(
+    adminId, 
+   `${message.from.id}: ${message.from.first_name || ''} ${message.from.last_name || ''} ${message.from.username ||'неизвестно'} прислал сообщение:`, {
+  reply_markup: KeyboardService.getAdminReplyKeyboard(message.message_id),
+  })
+   
+return await this.telegram.forwardMessage(adminId, message.chat.id, message.message_id, {
+  disable_notification: true
+});
 }
 
   public async handleMessage(adminId: number, message: TelegramBot.Message): Promise<TelegramBot.Message|void> {
@@ -114,20 +140,20 @@ public async answer (query: TelegramBot.CallbackQuery, text: string): Promise<an
 
     return this.sendMessage(telegramId, MessageService.startMessage(), {
       parse_mode: 'HTML',
-      reply_markup: {
-        keyboard: KeyboardService.getMainMenuKeyboard(),
-        resize_keyboard: true,
-      },
+      // reply_markup: {
+      //   keyboard: KeyboardService.getMainMenuKeyboard(),
+      //   resize_keyboard: true,
+      // },
     })
   }
 
-  public async helpMenu(telegramId: number): Promise<TelegramBot.Message> {
-    return this.sendMessage(telegramId, MessageService.helpMessage(), {
-      parse_mode: 'HTML',
-      keyboard: KeyboardService.getMainMenuKeyboard(),
-      resize_keyboard: true,
-    })
-  }
+  // public async helpMenu(telegramId: number): Promise<TelegramBot.Message> {
+  //   return this.sendMessage(telegramId, MessageService.helpMessage(), {
+  //     parse_mode: 'HTML',
+  //     //keyboard: KeyboardService.getMainMenuKeyboard(),
+  //     //resize_keyboard: true,
+  //   })
+  // }
 
   public async onNotFound(telegramId: number): Promise<TelegramBot.Message> {
     return this.sendMessage(telegramId, MessageService.notFoundMessage())

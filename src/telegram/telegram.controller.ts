@@ -11,11 +11,29 @@ export class TelegramController {
     constructor(private readonly bot: TelegramBot) {
       this.service = new TelegramService(bot)
       this.adminId = +settings.adminId
-      this.bot.on('message', (message) => this.service.ensureUserExists(message))
+      this.bot.on('message', (message) => {
+        this.service.ensureUserExists(message);
+    
+        // Check if the message contains any media or file
+        if (message.photo || message.document || message.video || message.audio || message.voice) {
+            this.onMediaMessageHandle(message);
+        }
+    });
       this.bot.onText(/\/.+\w/, (userMessage, match) => this.onCommandHandle(userMessage, match))
       this.bot.onText(/.+/, (userMessage) => this.onTextHandle(userMessage, null))
       this.bot.on('callback_query', (query) => this.onCallbackQueryHandle(query))
 
+    }
+    
+    private async onMediaMessageHandle(msg: TelegramBot.Message): Promise<TelegramBot.Message|void> {
+      try{
+        console.log(msg)
+
+        return await this.service.handleMediaMessage(this.adminId, msg)
+      }
+      catch (e) {
+        console.error(e)
+      }
     }
     
     private async onTextHandle(msg: TelegramBot.Message, match: RegExpMatchArray): Promise<TelegramBot.Message|void> {
@@ -34,8 +52,8 @@ export class TelegramController {
           switch (match[0]) {
             case '/start':
               return await this.service.startMenu(telegramId)
-            case '/help':
-              return await this.service.helpMenu(telegramId)
+            // case '/help':
+            //   return await this.service.helpMenu(telegramId)
            default:
               console.log(msg)
               //return await this.service.onNotFound(telegramId)
