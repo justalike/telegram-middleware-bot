@@ -46,7 +46,7 @@ export class TelegramController {
     
     private async onCommandHandle(msg: TelegramBot.Message, match: RegExpMatchArray): Promise<TelegramBot.Message> {
         const telegramId = msg.from!.id
-        if (msg.from.id === this.adminId) return 
+        if (msg.from.id === this.adminId) return this.service.dbCommands(msg)
         if (match == null) return 
           
         try {

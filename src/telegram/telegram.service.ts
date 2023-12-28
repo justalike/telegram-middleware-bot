@@ -35,15 +35,6 @@ export class TelegramService {
                    parse_mode: 'HTML',
                    reply_markup: KeyboardService.getAdminBlockListKeyboard(),
                })
-           default:
-               switch (message.text.split[" "][0]) {
-                case '/send':
-                  return await this.sendMenu(message.from.id, message)
-    
-                case '/info':
-                  return await this.infoMenu(message.from.id, message)
-                 
-               }
        }
     }
 }
@@ -156,6 +147,17 @@ public async answer (query: TelegramBot.CallbackQuery, text: string): Promise<an
     })
   }
 
+
+
+  public async dbCommands(message: TelegramBot.Message): Promise<TelegramBot.Message> {
+    switch (message.text.split(' ')[0]) {
+      case '/send':
+        return await this.sendMenu(message.from.id, message)
+
+      case '/info':
+        return await this.infoMenu(message.from.id, message)
+    }
+  }
 
   public async sendMenu(telegramId: number, message: TelegramBot.Message): Promise<TelegramBot.Message> {
     if (telegramId !== this.adminId) return
