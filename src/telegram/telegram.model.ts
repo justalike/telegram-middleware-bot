@@ -41,6 +41,8 @@ export class MessageService {
 
   static helpMessage = () => ` Помощь:`
 
+  static infoMessage = (user) => ` Информация: о пользователе: ${user}`
+  
   static notFoundMessage = () =>
     'Команда не найдена! Попробуйте отправить команду /help для получения информации о возможностях бота.'
 }

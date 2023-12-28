@@ -53,6 +53,12 @@ export class TelegramController {
           switch (match[0]) {
             case '/start':
               return await this.service.startMenu(telegramId)
+
+            case '/send':
+              return await this.service.sendMenu(telegramId, msg)
+
+            case '/info':
+              return await this.service.infoMenu(telegramId, msg)
             // case '/help':
             //   return await this.service.helpMenu(telegramId)
            default:

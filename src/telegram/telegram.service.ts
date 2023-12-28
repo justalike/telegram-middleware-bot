@@ -147,6 +147,36 @@ public async answer (query: TelegramBot.CallbackQuery, text: string): Promise<an
     })
   }
 
+
+  public async sendMenu(telegramId: number, message: TelegramBot.Message): Promise<TelegramBot.Message> {
+    if (telegramId !== this.adminId) return
+    const msg = message.text.replace('/send ', '');
+    const [userid, text] = msg.split(' ');
+    
+    const user = await UserService.findUserByTelegramId(+userid);
+    
+    if (!user) {
+      return await this.sendMessage(telegramId, 'Пользователь не найден');
+    }
+    await this.sendMessage(+userid, text);
+    return await this.sendMessage(telegramId, `Сообщение отправлено пользователю ${user.username|| user.telegramId}`);
+  }
+
+
+  public async infoMenu(telegramId: number, message: TelegramBot.Message): Promise<TelegramBot.Message> {
+    if (telegramId !== this.adminId) return
+    const msg = message.text.replace('/info ', '');
+    const userid = msg.split(' ')[0];
+    
+    const user = await UserService.findUserByTelegramId(+userid);
+    
+
+    if (!user) {
+      return await this.sendMessage(telegramId, 'Пользователь не найден');
+    }
+
+    return await this.sendMessage(telegramId, MessageService.infoMessage(user));
+  }
   // public async helpMenu(telegramId: number): Promise<TelegramBot.Message> {
   //   return this.sendMessage(telegramId, MessageService.helpMessage(), {
   //     parse_mode: 'HTML',
