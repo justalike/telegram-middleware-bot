@@ -35,6 +35,15 @@ export class TelegramService {
                    parse_mode: 'HTML',
                    reply_markup: KeyboardService.getAdminBlockListKeyboard(),
                })
+           default:
+               switch (message.text.split[" "][0]) {
+                case '/send':
+                  return await this.sendMenu(message.from.id, message)
+    
+                case '/info':
+                  return await this.infoMenu(message.from.id, message)
+                 
+               }
        }
     }
 }
